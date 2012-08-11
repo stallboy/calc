@@ -29,7 +29,6 @@ var cur Token
 
 func scan() {
 	cur = scanner.Scan()
-	//fmt.Println(cur)
 }
 
 func match(tp TokenType) {
@@ -38,16 +37,17 @@ func match(tp TokenType) {
 		return
 	}
 
-	panic(fmt.Sprintln("unmatched token ", cur, tp))
+	panic(fmt.Sprintf("unmatched token %v, expected %v", cur, tp))
 }
 
-func command() {
+func Parse(cmd string) {
 	defer func() {
 		if x := recover(); x != nil {
-			fmt.Println("panic: ", x)
+			fmt.Printf("panic: %v\n", x)
 		}
 	}()
 
+	scanner = NewScanner(cmd)
 	f := scanner.Scan()
 	s := scanner.Scan()
 
@@ -56,7 +56,7 @@ func command() {
 		r := exp()
 		match(EOL)
 		ctx[f.Lit] = r
-		fmt.Println(f.Lit, "=", r)
+		fmt.Printf("%s=%v\n", f.Lit, r)
 
 	} else {
 		scanner.Unscan(s)
@@ -83,7 +83,6 @@ func exp() float64 {
 		}
 	}
 
-	//fmt.Println("exp", r)
 	return r
 }
 
@@ -101,7 +100,6 @@ func multiexp() float64 {
 			r /= r2
 		}
 	}
-	//fmt.Println("multiexp", r)
 	return r
 }
 
@@ -147,7 +145,7 @@ func atom() float64 {
 		if f, e := strconv.ParseFloat(lit, 64); e == nil {
 			return f
 		}
-		panic("parseFloat err " + lit)
+		panic("parse float error " + lit)
 	}
-	panic(fmt.Sprintln("unexpected token ", cur))
+	panic(fmt.Sprintf("unexpected token %v", cur))
 }
