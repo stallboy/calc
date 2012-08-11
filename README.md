@@ -16,5 +16,6 @@
 ## BUILD
 
 ```
-go build calc.go parse.go scan.go
+cd gocalc
+go build
 ```
